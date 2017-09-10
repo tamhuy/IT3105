@@ -7,7 +7,6 @@ def loadBoard(filename): #Function to read from file
 
     print state
 
-
     print board
     for line in state:
         print "car:", state.index(line)
@@ -23,12 +22,14 @@ def loadBoard(filename): #Function to read from file
     f.close()
     return board, state
 
+
 def printBoard(board):
     for i in range(6):
         x = ''
         for j in range(6):
             x += str(board[j][i])
         print x
+
 
 def findLegalMoves(board, state):
     validStates = []
