@@ -1,5 +1,7 @@
 import aStar
-
+#import GUI
+import numpy as np
+import matplotlib.pyplot as plt
 
 class State:
     f = float("inf")
@@ -30,12 +32,18 @@ class State:
         self.board = board
 
     def heuristic(self):
-        h = 5 - self.state[0][1] + self.state[0][3] - 1
+        h = 6 - (self.state[0][1] + self.state[0][3])
+        #print h
         h1 = 0
-        for i in range(h):
-            if self.board[self.state[0][1]][self.state[0][2]] != '.':
-                h1 += 1
-
+        #for i in range(h):
+        if self.state[0][1]+self.state[0][3]-1 != 5:
+            for i in range(h):
+                #print self.board[self.state[0][1]+self.state[0][3]]
+                if self.board[self.state[0][1]+self.state[0][3]+i][self.state[0][2]] != '.':
+                    h1 += 1
+                    a = self.board[self.state[0][1]+self.state[0][3]+i][self.state[0][2]]
+                    if self.board[self.state[a][1]][self.state[a][2]-1] != '.' and self.board[self.state[a][1]][self.state[a][2] +self.state[a][3]] != '.':
+                        h1 += 1
         return h + h1
 
     def isSolution(self):
@@ -91,6 +99,8 @@ class State:
             for j in range(6):
                 x += str(self.board[j][i])
             print x
+    def gui(self):
+        GUI(self)
 
 
 def loadBoard(filename):  # Function to read from file
@@ -128,11 +138,78 @@ def printBoard(board):
             x += str(board[j][i])
         print x
 
+class GUI():
+    def __init__(self, node):
+        self.image = self.initImage(node)
+
+    def initImage(self, node):
+        if GUI:
+            board = self.visualize(node)
+            figure = plt.figure()
+            plt.axis('off')
+            axes = figure.gca()
+            board = np.ma.masked_where(board == 0, board)  # For some reason need to mask data to override color
+            cmap = plt.cm.get_cmap('gist_rainbow')
+            cmap.set_bad(color='gray')  # Overrides the color of 0
+            image = axes.imshow(board, interpolation='nearest', cmap=cmap)
+
+            plt.pause(0.1)
+        return image
+
+    def draw(self, node):
+        if True:
+            board = self.visualize(node)
+            board = np.ma.masked_where(board == 0, board)
+            self.image.set_data(board)
+            plt.pause(0.5)  # plt needs to own the main loop which time.sleep does not do, also handles drawing
+
+    def visualize(self, node):
+        state = node.state
+        board = np.zeros((6, 6))
+        i = 1
+        for car in state:
+            orientation, x_min, y_min, size = car
+            if orientation:
+                x_max = x_min + 1
+                y_max = y_min + size
+
+            else:
+                x_max = x_min + size
+                y_max = y_min + 1
+
+            for x in range(x_min, x_max):
+                for y in range(y_min, y_max):
+                    board[y, x] = i
+
+            i += 1
+
+        return board
+
+    def show_solution(self, node):
+        solution = list()
+        solution.append(node)
+        while node.parent:
+            node = node.parent
+            solution.append(node)
+
+        print("Path length: ", len(solution))
+        if True:
+            for node in solution[::-1]:
+                print node.printBoard()
+                self.draw(node, 2)
+
 
 def run():
     filename = "Scenarios/expert-2.txt"
     state = loadBoard(filename)
-    print aStar.aStar(State(state))
+    x= aStar.aStar(State(state))
+    g = GUI(x)
+    g.show_solution(x)
+    #GUI.visualize(x)
+    #GUI.show_solution(GUI(x))
+    #fig = plt.figure(figsize=[8, 8])
+    #plt.show()
+
     '''
     a = State(state)
     c = a.findLegalMoves()

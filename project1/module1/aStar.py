@@ -1,3 +1,4 @@
+import module1
 #The A* algorithm is based on the sudo code provided in the "Supplement - Essentials of the AStas Algorithm.pdf" included with the assignment
 def aStar(state): #Method for the A* algorithm
     print "A*"
@@ -6,12 +7,14 @@ def aStar(state): #Method for the A* algorithm
     state.h = state.heuristic()
     state.f = state.g + state.h
     open.append(state) #Adds the starting node to the open list
+    g = module1.GUI(state)
 
     while True: #Agenda loop
         #print "hei"
         if len(open) == 0:# If the goal cannot be reached, return fail
             return False
         x = open.pop() #take the top element of the open stack and place it in the closed stack
+        g.draw(x)
         #print "----"
         #printBoard(x.board)
         #print x.state
@@ -21,13 +24,15 @@ def aStar(state): #Method for the A* algorithm
         if x.isSolution():# if you have arrived at the end position then end
             print len(open) + len(closed)
             moves = 0
+            return x
             while x.parent != None:
                 moves += 1
-                print "---"
-                x.printBoard()
+                #print "---"
+                #x.printBoard()
+
+                x.gui().showsolution(x)
                 x = x.parent
             print moves
-            return open, closed
         children = x.findLegalMoves()
         #print "state: ", x.state
         #print x.printBoard()
