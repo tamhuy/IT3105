@@ -1,18 +1,33 @@
 import GUI
-
+from SearchState import searchState
 from GAC import GAC
 from csp import CSP
+from aStar import aStar
 
 def agac(filename):
-    pass
+    csp = CSP(filename)
+    print csp.domains
+    gac = GAC(csp)
+    gac.initialize()
+    gac.domainFilter()
+    print gac.domains
+    #ss = searchState(gac ,gac.domains)
+    #print aStar(ss)
+    GUI.GUI(gac)
 
 
-CSP = CSP("Nonograms/nono-telephone.txt")
+
+agac("Nonograms/nono-chick.txt")
 #print CSP.constraints[CSP.rowVar[0]][0].function
 #print CSP.variables
-test = GAC(CSP)
-test.initialize()
-test.domainFilter()
+#gac = GAC()
+#gac.initialize(csp)
+#gac.domainFilter(csp)
+#print csp.domains
+#ss = searchState(csp, csp.variables,csp.domains,csp.constraints,csp.rows,csp.columns)
+#aStar(ss)
+#print aStar(ss).domains
+#GUI.draw(aStar(ss),csp )
 #for i in test.variables:
     #print test.domains[i]
-GUI.GUI(test)
+#GUI.GUI(csp)
